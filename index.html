@@ -1,0 +1,1390 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Recommendations for AI Indexing & Content Optimisation</title>
+  <meta name="description" content="Client report: content and high-level technical recommendations to improve AI indexing in ChatGPT, Claude and Perplexity." />
+  <link rel="icon" type="image/jpeg" href="favicon.jpg" />
+  <link rel="shortcut icon" type="image/jpeg" href="favicon.jpg" />
+  <link rel="preconnect" href="https://unpkg.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+  <style>
+:root{
+  --cream:#F5F2ED;
+  --deep-green:#2E4A38;
+  --sage:#6B8F77;
+  --mint:#9DCCA4;
+  --ink:#111111;
+  --accent-red:#E3252A;
+  --pill-dark:#233528;
+  --warm-orange:#FF6B35;
+  --soft-blue:#4A90E2;
+  --purple:#8B5CF6;
+  --coral:#FF6B6B;
+  --shadow: 0 6px 24px rgba(0,0,0,.08), 0 1px 3px rgba(0,0,0,.08);
+  --glass: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --gradient-primary: linear-gradient(135deg, var(--soft-blue) 0%, var(--purple) 100%);
+  --gradient-secondary: linear-gradient(135deg, var(--warm-orange) 0%, var(--coral) 100%);
+  --gradient-accent: linear-gradient(135deg, var(--purple) 0%, var(--soft-blue) 100%);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family: 'Bitter', serif;
+  color:var(--ink);
+  background:var(--cream);
+}
+
+/* Skip */
+.skip-link{
+  position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;
+}
+.skip-link:focus{left:1rem;top:1rem;width:auto;height:auto;background:#fff;padding:.5rem .75rem;border-radius:.5rem;box-shadow:var(--shadow)}
+
+/* Left rail */
+.rail{
+  position:fixed; inset:0 auto 0 0; width:260px; padding:24px 16px;
+  display:flex; flex-direction:column; gap:20px; 
+  background: linear-gradient(180deg, rgba(46, 74, 56, 0.95) 0%, rgba(46, 74, 56, 0.85) 100%);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid var(--glass-border);
+  color:#fff; z-index:30;
+  box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+}
+.rail__brand {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.rail__brand .logo-image {
+  width: 120px;
+  height: auto;
+  max-height: 80px;
+  object-fit: contain;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1));
+}
+.rail__brand .logo-image:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 6px 20px rgba(0,0,0,0.15));
+}
+.rail__links{list-style:none;margin:0;padding:0;display:flex;flex-direction:column; gap:4px;}
+.rail__links a{
+  display:flex; align-items:center; gap:10px; color:#dbe7e0; text-decoration:none; padding:12px 16px; border-radius:16px; 
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  color: #dbe7e0;
+}
+.rail__links a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient-secondary);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+.rail__links a:hover::before {
+  left: 0;
+}
+.rail__links a:hover{
+  color:#fff;
+  transform: translateX(8px);
+}
+.rail__links a.active{
+  background: var(--gradient-secondary);
+  color:#fff; 
+  box-shadow: 0 4px 20px rgba(107, 143, 119, 0.4);
+  transform: translateX(8px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-left: 4px solid var(--warm-orange);
+  padding-left: 12px;
+}
+
+/* Second color for menu items */
+.rail__links a:hover::before,
+.rail__links a.active::before {
+  background: #fe0216;
+}
+.rail__links a:hover,
+.rail__links a.active {
+  color: #fff !important;
+  transition: color 0.3s ease;
+}
+.icon{width:18px;height:18px;display:inline-block}
+
+.rail__progress{height:8px;background:rgba(255,255,255,0.1);border-radius:999px;overflow:hidden;margin-top:auto;backdrop-filter: blur(10px)}
+.rail__bar{height:100%;width:0;background:var(--gradient-accent);border-radius:999px;transition: width 0.3s ease;box-shadow: 0 0 20px rgba(79, 172, 254, 0.5)}
+
+.rail__ctas{display:flex;flex-direction:column;gap:12px}
+.btn{
+  border:0; cursor:pointer; border-radius:16px; padding:14px 20px; font-weight:700; letter-spacing:.01em; 
+  transition: all 0.3s ease; position: relative; overflow: hidden;
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.1);
+  transition: left 0.3s ease;
+  z-index: 1;
+}
+.btn:hover::before {
+  left: 0;
+}
+.btn span {
+  position: relative;
+  z-index: 2;
+}
+.btn--primary{
+  background: var(--gradient-secondary); 
+  color:#fff;
+  box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3);
+}
+.btn--primary:hover{
+  transform:translateY(-3px); 
+  box-shadow:0 15px 40px rgba(240, 147, 251, 0.4);
+}
+.btn--dark{
+  background: var(--gradient-primary); 
+  color:#fff;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+.btn--dark:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+}
+
+.mobile-header{display:none}
+
+/* Main layout */
+.main{margin-left:260px; padding:32px}
+
+/* Ensure main content is always visible */
+.main, .main * {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+.card{
+  background: white; 
+  border-radius: 24px; 
+  box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 8px 25px rgba(0,0,0,0.05); 
+  padding: 40px; 
+  margin: 32px 0;
+  position:relative; 
+  overflow:hidden;
+  border: 1px solid rgba(0,0,0,0.1);
+  transition: all 0.4s ease;
+}
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.12), 0 15px 35px rgba(0,0,0,0.08);
+}
+.card--hero{
+  min-height:70vh; display:grid; grid-template-columns:1.2fr .8fr; align-items:center; gap:40px;
+  background: white;
+  position: relative;
+}
+
+.card__inner{padding:12px 8px}
+
+/* Hero content visibility */
+.card--hero .card__inner * {
+  opacity: 1 !important;
+  visibility: visible !important;
+  color: inherit !important;
+}
+.display{font-size: clamp(32px, 5.5vw, 48px); line-height:1.1; margin:.1em 0 .2em; color: var(--ink) !important; opacity: 1 !important}
+.eyebrow{display:inline-block; font-weight:700; color:#fff; background:var(--warm-orange); padding:6px 12px; border-radius:999px; letter-spacing:.02em; opacity: 1 !important}
+.lede{font-size:1.1rem; color:var(--ink); opacity: 1 !important; line-height: 1.7}
+.grad{background: linear-gradient(135deg, var(--sage) 0%, var(--mint) 50%, var(--deep-green) 100%); -webkit-background-clip:text; background-clip:text; color:transparent}
+.pill-list{display:flex; gap:10px; flex-wrap:wrap; margin:18px 0; justify-content:flex-start; padding-left:0}
+.pill-list li{list-style:none}
+
+/* Technical section list spacing */
+#technical ul li{margin-bottom:12px}
+
+/* Global list item spacing */
+ul li{margin-bottom:10px}
+ul li:last-child{margin-bottom:0}
+
+/* Exception for pill-list */
+.pill-list li{margin-bottom:0}
+
+/* Enhanced line-height for Institutional and Blog sections */
+#institutional ul li, #blog ul li {
+  line-height: 1.8 !important;
+}
+
+/* Enhanced line-height for subcard lists */
+.subcard ul li {
+  line-height: 1.8 !important;
+}
+.pill{background:var(--mint); border:1px solid var(--sage); color:var(--deep-green); padding:8px 12px; border-radius:999px; font-weight:600}
+
+.hero-art .blob{
+  position:absolute; right:-100px; bottom:-100px; width:600px; height:600px; border-radius:50%;
+  background: linear-gradient(135deg, var(--mint) 0%, var(--sage) 100%);
+  filter: blur(20px); 
+  opacity: 0.3;
+  animation: float 6s ease-in-out infinite;
+  z-index: -1;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-20px) rotate(120deg); }
+  66% { transform: translateY(10px) rotate(240deg); }
+}
+
+h2{font-size: clamp(24px, 3.6vw, 40px); margin:.2em 0 .4em; color: var(--deep-green); line-height: 1.3}
+h3{font-size: clamp(18px, 2.2vw, 24px); margin:.2em 0 .4em; color: var(--deep-green); line-height: 1.4}
+h4{margin:.2em 0 .2em; color: var(--deep-green); line-height: 1.4}
+.para{max-width:72ch; line-height: 1.7; color: #2d2d2d}
+.check{padding-left:18px; line-height: 1.7; list-style: disc}
+.check li{margin:.7em 0; color: #2d2d2d; line-height: 1.6}
+
+.cta-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.kpi-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:24px}
+.kpi{
+  background: rgba(157, 204, 164, 0.1); 
+  border: 1px solid rgba(107, 143, 119, 0.2); 
+  border-radius: 20px; 
+  padding: 20px; 
+  text-align: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+.kpi:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 40px rgba(46, 74, 56, 0.1);
+  background: rgba(157, 204, 164, 0.15);
+}
+.kpi__num{font-size:32px; font-weight:800; display:block; color:var(--deep-green); margin-bottom: 8px}
+.kpi__label{font-size:1rem; color:var(--sage); font-weight: 500}
+
+.subgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:20px; align-items: stretch}
+.subcard{
+  background: linear-gradient(135deg, rgba(245, 242, 237, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%); 
+  border: 1px solid rgba(107, 143, 119, 0.3); 
+  border-radius: 20px; 
+  padding: 28px;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.subcard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-secondary);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+.subcard:hover::before {
+  transform: scaleX(1);
+}
+.subcard:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 20px 50px rgba(46, 74, 56, 0.15);
+  background: linear-gradient(135deg, rgba(245, 242, 237, 1) 0%, rgba(255, 255, 255, 0.95) 100%);
+  border-color: rgba(107, 143, 119, 0.5);
+}
+.subcard .why{
+  color: var(--deep-green); 
+  font-weight: 600; 
+  line-height: 1.6;
+  padding: 8px 12px;
+  background: rgba(157, 204, 164, 0.15);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  display: inline-block;
+}
+
+/* Ensure content fills the card height properly */
+.subcard ul {
+  flex-grow: 1;
+  margin: 12px 0;
+}
+
+.subcard p:last-of-type {
+  margin-top: auto;
+}
+.subcard h3 {
+  color: var(--deep-green);
+  margin-bottom: 16px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  position: relative;
+  line-height: 1.4;
+}
+.subcard h3::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 30px;
+  height: 3px;
+  background: var(--gradient-secondary);
+  border-radius: 2px;
+}
+
+.inline{display:flex; gap:10px; flex-wrap:wrap}
+.inline li{background:var(--mint); border:1px solid var(--sage); padding:6px 10px; border-radius:999px; color:var(--deep-green)}
+
+.benefits{display:grid; grid-template-columns:repeat(3,1fr); gap:20px}
+.benefits article{
+  background: linear-gradient(135deg, rgba(245, 242, 237, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%); 
+  border: 1px solid rgba(107, 143, 119, 0.3); 
+  border-radius: 20px; 
+  padding: 28px;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+.benefits article::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+.benefits article:hover::before {
+  transform: scaleX(1);
+}
+.benefits article:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 20px 50px rgba(46, 74, 56, 0.15);
+  background: linear-gradient(135deg, rgba(245, 242, 237, 1) 0%, rgba(255, 255, 255, 0.95) 100%);
+  border-color: rgba(107, 143, 119, 0.5);
+}
+.benefits article h3 {
+  color: var(--deep-green);
+  margin-bottom: 16px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  position: relative;
+  line-height: 1.4;
+}
+.benefits article h3::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 25px;
+  height: 3px;
+  background: var(--gradient-primary);
+  border-radius: 2px;
+}
+.benefits article p {
+  line-height: 1.7;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.timeline{list-style:none; padding:0; margin:0; display:grid; gap:16px}
+.timeline li{
+  background: linear-gradient(135deg, rgba(245, 242, 237, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%); 
+  border: 1px solid rgba(107, 143, 119, 0.3); 
+  border-radius: 20px; 
+  padding: 28px;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+.timeline li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: var(--gradient-accent);
+  border-radius: 0 3px 3px 0;
+  transform: scaleY(0);
+  transition: transform 0.4s ease;
+}
+.timeline li:hover::before {
+  transform: scaleY(1);
+}
+.timeline li:hover {
+  transform: translateX(8px) scale(1.02);
+  box-shadow: 0 20px 50px rgba(46, 74, 56, 0.15);
+  background: linear-gradient(135deg, rgba(245, 242, 237, 1) 0%, rgba(255, 255, 255, 0.95) 100%);
+  border-color: rgba(107, 143, 119, 0.5);
+}
+.timeline li h4 {
+  color: var(--deep-green);
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  position: relative;
+}
+.timeline li h4::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 20px;
+  height: 2px;
+  background: var(--gradient-accent);
+  border-radius: 1px;
+}
+.timeline li p {
+  line-height: 1.6;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+/* New timeline item styles */
+.timeline-item {
+  background: linear-gradient(135deg, rgba(245, 242, 237, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%); 
+  border: 1px solid rgba(107, 143, 119, 0.3); 
+  border-radius: 20px; 
+  padding: 28px;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: var(--gradient-secondary);
+  border-radius: 0 3px 3px 0;
+  transform: scaleY(0);
+  transition: transform 0.4s ease;
+}
+
+.timeline-item:hover::before {
+  transform: scaleY(1);
+}
+
+.timeline-item:hover {
+  transform: translateX(8px) scale(1.02);
+  box-shadow: 0 20px 50px rgba(46, 74, 56, 0.15);
+  background: linear-gradient(135deg, rgba(245, 242, 237, 1) 0%, rgba(255, 255, 255, 0.95) 100%);
+  border-color: rgba(107, 143, 119, 0.5);
+}
+
+.timeline-item h3 {
+  color: var(--deep-green);
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+  border-bottom: 2px solid var(--mint);
+  padding-bottom: 8px;
+}
+
+.timeline-item h4 {
+  color: var(--sage);
+  margin: 16px 0 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.timeline-item p {
+  margin: 8px 0;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.timeline-item .outcome {
+  background: rgba(157, 204, 164, 0.15);
+  border: 1px solid rgba(107, 143, 119, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;
+  font-style: italic;
+  color: var(--deep-green);
+  font-weight: 500;
+}
+
+.why-section {
+  background: rgba(157, 204, 164, 0.1);
+  border: 1px solid rgba(107, 143, 119, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 32px;
+}
+
+.why-section h3 {
+  color: var(--deep-green);
+  margin-bottom: 16px;
+  font-size: 1.3rem;
+}
+
+/* Overall Benefit note styling */
+.note {
+  margin-top: 85px !important;
+  padding: 24px !important;
+  background: rgba(157, 204, 164, 0.1) !important;
+  border: 1px solid rgba(107, 143, 119, 0.2) !important;
+  border-radius: 16px !important;
+  clear: both !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.note p {
+  margin: 0 !important;
+  line-height: 1.6 !important;
+  color: var(--deep-green) !important;
+  font-weight: 500 !important;
+}
+
+
+
+.footer{
+  padding: 40px 0 20px; 
+  text-align: center; 
+  color: var(--sage); 
+  opacity: 0.9;
+  background: rgba(245, 242, 237, 0.8);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(107, 143, 119, 0.2);
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Mobile */
+@media (max-width: 1199px){
+  .rail{display:none}
+  .mobile-header{
+    display:flex; 
+    align-items:center; 
+    gap:12px; 
+    position:sticky; 
+    top:0; 
+    z-index:40; 
+    background: linear-gradient(135deg, rgba(46, 74, 56, 0.95) 0%, rgba(46, 74, 56, 0.85) 100%);
+    backdrop-filter: blur(20px);
+    color:#fff; 
+    padding:16px 20px;
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .mobile-title{font-weight:700; font-size: 1.1rem}
+  .hamburger{
+    all:unset; 
+    cursor:pointer; 
+    padding:12px 16px; 
+    background: #fe0216;
+    border-radius:12px;
+    transition: all 0.3s ease;
+  }
+  .hamburger:hover {
+    transform: scale(1.05);
+    background: #d10012;
+  }
+  .mobile-drawer{
+    position:fixed; 
+    inset:72px 0 auto 0; 
+    background: linear-gradient(180deg, rgba(15, 31, 23, 0.95) 0%, rgba(15, 31, 23, 0.9) 100%);
+    backdrop-filter: blur(20px);
+    color:#dbe7e0; 
+    transform:translateY(-110%);
+    transition:.3s ease; 
+    z-index:50; 
+    padding:20px;
+    border-bottom-left-radius:20px;
+    border-bottom-right-radius:20px;
+    border: 1px solid var(--glass-border);
+    display: none;
+  }
+  .mobile-drawer[aria-hidden="false"]{
+    transform:translateY(0);
+    display: block;
+  }
+  .mobile-drawer a{
+    color:#fff; 
+    text-decoration:none; 
+    display:block; 
+    padding:16px 0; 
+    border-bottom:1px solid rgba(255,255,255,.08);
+    transition: all 0.3s ease;
+  }
+  .mobile-drawer a:hover {
+    color: #fff;
+    padding-left: 8px;
+    background: #fe0216;
+    border-radius: 8px;
+    padding: 16px 8px 16px 16px;
+  }
+  .main{margin:0; padding:20px}
+  .card--hero{grid-template-columns:1fr; gap: 20px}
+  .card { padding: 24px; margin: 20px 0 }
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .subgrid{grid-template-columns:1fr}
+  .benefits{grid-template-columns:1fr}
+}
+
+/* Desktop: Ensure mobile-drawer doesn't interfere */
+@media (min-width: 1200px) {
+  .mobile-header,
+  .mobile-drawer {
+    display: none !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    pointer-events: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    transform: none !important;
+    z-index: -1 !important;
+  }
+}
+
+/* Observed animation (reveal) */
+.obs{
+  opacity: 1; 
+  transform: translateY(0);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.obs.is-in{
+  opacity: 1; 
+  transform: translateY(0);
+}
+/* Subtle entrance animation */
+.obs:not(.is-in) {
+  opacity: 0.9;
+  transform: translateY(5px);
+}
+
+/* Ensure text is always visible */
+.obs h1, .obs h2, .obs h3, .obs h4, .obs p, .obs li, .obs .para, .obs .lede {
+  opacity: 1 !important;
+  color: inherit !important;
+}
+
+/* Force visibility for all text elements */
+.card * {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Specific text visibility */
+.card h1, .card h2, .card h3, .card h4, .card p, .card li, .card .para, .card .lede, .card .check li {
+  opacity: 1 !important;
+  visibility: visible !important;
+  color: inherit !important;
+}
+
+/* Ensure pills are visible */
+.pill {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Global text visibility override */
+body, body * {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Specific override for any hidden elements */
+[style*="opacity: 0"], [style*="visibility: hidden"] {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+ul {
+    list-style-type: none;
+}
+.btn--primary{text-decoration: none !important;}
+/* ===== PLATFORM LOGOS ===== */
+.platform-logos {
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.platform-logo {
+  width: 120px;
+  max-width: 150px;
+  height: auto;
+  object-fit: contain;
+  transition: var(--transition-normal);
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  margin-right: 15px;
+  vertical-align: middle;
+}
+
+.platform-logo:hover {
+  transform: scale(1.1);
+}
+
+.platform-logo:last-child {
+  margin-right: 0;
+}
+
+
+  </style>
+  <!-- Lucide icons (ESM via CDN) -->
+  <script type="module">
+    import { createIcons, Home, FileText, BookText, PenTool, Settings, Sparkles, Calendar, Phone, LayoutDashboard } from "https://unpkg.com/lucide@latest/dist/esm/lucide.js";
+    window.lucide = { createIcons };
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Fixed Left Rail -->
+  <nav class="rail" aria-label="Section navigation">
+    <div class="rail__brand" aria-label="Brand">
+      <img src="logo.avif" alt="DNA Logo" class="logo-image" />
+    </div>
+
+    <ol class="rail__links" id="railLinks">
+      <li><a href="#home" data-label="Home" class="active"><span class="icon" data-ic="home"></span>Home</a></li>
+      <li><a href="#overview"><span class="icon" data-ic="layout-dashboard"></span>Executive Summary</a></li>
+      <li><a href="#institutional"><span class="icon" data-ic="file-text"></span>Institutional</a></li>
+      <li><a href="#blog"><span class="icon" data-ic="book-text"></span>Blog</a></li>
+      <li><a href="#style"><span class="icon" data-ic="pen-tool"></span>Style & Structure</a></li>
+      <li><a href="#technical"><span class="icon" data-ic="settings"></span>Technical</a></li>
+      <li><a href="#benefits"><span class="icon" data-ic="sparkles"></span>Benefits</a></li>
+      <li><a href="#roadmap"><span class="icon" data-ic="calendar"></span>Roadmap</a></li>
+
+    </ol>
+
+    <div class="rail__progress" aria-hidden="true">
+      <div class="rail__bar" id="progressBar"></div>
+    </div>
+
+    <div class="rail__ctas">
+      <!-- CTA removed -->
+    </div>
+  </nav>
+
+  <!-- Mobile header -->
+  <header class="mobile-header" role="banner">
+    <button class="hamburger" aria-controls="mobileMenu" aria-expanded="false" id="btnMenu">☰</button>
+    <span class="mobile-title">AI Indexing & Content Optimisation</span>
+  </header>
+  <aside class="mobile-drawer" id="mobileMenu" aria-hidden="true">
+    <ol>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#overview">Executive Summary</a></li>
+      <li><a href="#institutional">Institutional</a></li>
+      <li><a href="#blog">Blog</a></li>
+      <li><a href="#style">Style & Structure</a></li>
+      <li><a href="#technical">Technical</a></li>
+      <li><a href="#benefits">Benefits</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+
+    </ol>
+  </aside>
+
+  <!-- Main content -->
+  <main id="main" class="main" style="background: black !important;">
+    <!-- Hero -->
+    <section id="home" class="card card--hero obs">
+      <div class="card__inner">
+        <div class="platform-logos">
+          <img src="assets/logosia/ChatGpt-logo-With-colour-Background-and-features-ChatGPT-Name.png" alt="ChatGPT" class="platform-logo" />
+          <img src="assets/logosia/Claude_AI_logo.svg.png" alt="Claude" class="platform-logo" />
+          <img src="assets/logosia/Purple-Logo-on-transparent-background.png" alt="Perplexity" class="platform-logo" />
+        </div>
+        <h1 class="display">Recommendations for <span class="grad">AI Indexing</span> & Content Optimisation</h1>
+        <p class="lede">A practical, client-ready plan to make your content clearer, more citable, and more visible across AI search engines.</p>
+
+        <ul class="pill-list">
+          <li class="pill">Greater visibility</li>
+          <li class="pill">Stronger authority</li>
+          <li class="pill">Higher-quality leads</li>
+        </ul>
+
+        <div class="cta-row">
+          <a href="#overview" class="btn btn--primary"><span>See recommendations</span></a>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <!-- Subtle background gradient blob -->
+        <div class="blob"></div>
+        <!-- Optional lottie/illustration hook -->
+      </div>
+    </section>
+
+    <!-- Executive Summary -->
+    <section id="overview" class="card obs">
+      <h2>Executive Summary (TL;DR)</h2>
+      <p class="para">This report outlines how to structure and publish content so AI engines can easily understand, extract and cite your pages.</p>
+      <ul class="check">
+        <li>Improve visibility in AI search engines (ChatGPT, Claude, Perplexity).</li>
+        <li>Structure content so answers are clear, extractable and citable.</li>
+        <li>Prioritise formats AIs prefer: <strong>FAQs</strong>, <strong>TL;DR summaries</strong>, <strong>How-To guides</strong>, <strong>case studies with measurable results</strong>.</li>
+        <li>Reinforce authority with definitions, evidence and sector relevance.</li>
+        <li>SEO synergy: these improvements also lift rankings in Bing/Brave/Google.</li>
+      </ul>
+
+      <div class="kpi-grid">
+        <div class="kpi"><span class="kpi__num" data-target="1.6">1.6×</span><span class="kpi__label">Visibility</span></div>
+        <div class="kpi"><span class="kpi__num" data-target="1.4">1.4×</span><span class="kpi__label">Authority</span></div>
+        <div class="kpi"><span class="kpi__num" data-target="1.3">1.3×</span><span class="kpi__label">SEO synergy</span></div>
+        <div class="kpi"><span class="kpi__num" data-target="1.5">1.5×</span><span class="kpi__label">Lead quality</span></div>
+      </div>
+    </section>
+
+    <!-- Institutional -->
+    <section id="institutional" class="card obs">
+      <h2>Core Website Content (Institutional)</h2>
+      <p class="para">Essential content pillars that establish DNA's authority and improve AI indexing across all institutional pages.</p>
+      
+      <div class="subgrid">
+        <article class="subcard">
+          <h3>1. Service FAQs</h3>
+          <p class="why"><strong>Purpose:</strong> The FAQ section should answer the most common questions potential clients have when approaching digital transformation. This content should be short, precise, and written in simple business language.</p>
+          <ul>
+            <li><strong>What is a Digital Diagnostic?</strong> → A comprehensive assessment of your company's digital maturity across processes, technology, data, and culture.</li>
+            <li><strong>How is a UX Audit different from a Digital Roadmap?</strong> → A UX Audit is tactical, focused on user experience; a Digital Roadmap is strategic, mapping the entire transformation journey aligned with business goals.</li>
+            <li><strong>How long does it take to see results?</strong> → Typically, quick wins (efficiency, data visibility, process improvements) appear within 90 days, while a full transformation plan spans 6–12 months.</li>
+            <li><strong>Which industries benefit the most?</strong> → The methodology is industry-agnostic, but proven results exist in retail, construction, agribusiness, and financial services.</li>
+          </ul>
+          <p class="why"><strong>Why This Works for AI:</strong> Short Q&A blocks make information scannable for visitors and easily reusable for AI-driven search.</p>
+        </article>
+        <article class="subcard">
+          <h3>2. Case Studies with Measurable Results</h3>
+          <p class="why"><strong>Purpose:</strong> DNA's blog and project stories should be repackaged into a standardized case study format: Challenge → Actions → Results (KPIs). This ensures credibility, quotability, and repeatability.</p>
+          <ul>
+            <li><strong>Retail:</strong> "Implementing a Digital Roadmap reduced order processing times by 35% in just three months."</li>
+            <li><strong>Construction:</strong> "A UX Audit of a project management platform improved internal adoption rates by 28% in eight weeks."</li>
+            <li><strong>Financial Services:</strong> "Restructuring digital processes increased risk control dashboard visibility by 40%."</li>
+          </ul>
+          <p><em>Example:</em> “Digital audit lifted qualified leads by 28% in eight weeks”.</p>
+        </article>
+        <article class="subcard">
+          <h3>3. Glossary of Key Terms</h3>
+          <p class="why"><strong>Purpose:</strong> A clear glossary consolidates DNA's expertise and ensures alignment in technical language. It also reinforces SEO and AI discoverability.</p>
+          <ul>
+            <li><strong>Digital Diagnostic:</strong> A holistic evaluation of digital maturity across business operations.</li>
+            <li><strong>UX Audit:</strong> A structured review of digital touchpoints to identify usability gaps and adoption challenges.</li>
+            <li><strong>Digital Roadmap:</strong> A phased strategy outlining priorities and milestones for digital transformation.</li>
+            <li><strong>Transformation KPIs:</strong> Metrics that measure the impact of digital initiatives on efficiency, revenue, and customer experience.</li>
+            <li><strong>AI Indexing:</strong> Structuring website content so it is easily retrievable by both traditional search engines and AI-powered systems.</li>
+          </ul>
+          <p class="why"><strong>Why This Works for AI:</strong> This makes DNA a reference point for digital transformation terminology in Uruguay and beyond.</p>
+        </article>
+        <article class="subcard">
+          <h3>4. TL;DR on Key Pages</h3>
+          <p class="why"><strong>Purpose:</strong> Every institutional page should begin with a short, quotable summary (2–3 sentences or bullet points) to deliver the essence at a glance.</p>
+          <ul>
+            <li><strong>Digital Diagnostic page:</strong> "A Digital Diagnostic uncovers your organization's digital maturity and provides a 90-day action plan to unlock growth."</li>
+            <li><strong>UX Audit page:</strong> "A UX Audit identifies usability issues that hinder adoption and optimizes digital experiences for employees and customers."</li>
+            <li><strong>Digital Roadmap page:</strong> "A Digital Roadmap sets clear priorities and phased actions to ensure measurable, sustainable transformation."</li>
+          </ul>
+          <p class="why"><strong>Why This Works for AI:</strong> These summaries provide clarity to users and improve performance in AI-powered indexing.</p>
+        </article>
+      </div>
+      
+      <div class="note" style="margin-top: 32px; padding: 24px; background: rgba(157, 204, 164, 0.1); border: 1px solid rgba(107, 143, 119, 0.2); border-radius: 16px; clear: both;">
+        <p><strong>📌 Overall Benefit:</strong> Structuring content this way not only strengthens DNA's website clarity but also turns the site into a high-value dataset that search engines and AI models can easily quote, increasing visibility, authority, and lead generation.</p>
+      </div>
+    </section>
+
+    <!-- Blog -->
+    <section id="blog" class="card obs" style="padding: 100px;">
+      <h2>Blog Content (Ongoing Publishing)</h2>
+      <p class="para">Strategic content pillars designed to showcase DNA's expertise and improve AI indexing across all platforms.</p>
+      
+      <div class="subgrid">
+        <article class="subcard">
+          <h3>1. How-To Guides (Step-by-Step)</h3>
+          <p class="why"><strong>Purpose:</strong> Showcase DNA's role in simplifying complex digital workflows.</p>
+          <ul>
+            <li><strong>"How to Launch a Branded Digital Newsroom in 5 Steps"</strong> - Step-by-step illustration from strategy alignment to tech configuration, showing how DNA enables brands to centralise media assets & stories.</li>
+            <li><strong>"How to Migrate Off SharePoint (or Legacy Systems) Without Losing Your Mind"</strong> - A practical manual reflecting DNA's expertise in system migration.</li>
+          </ul>
+          <p class="why"><strong>Why This Works for AI:</strong> Options with clear, numbered workflows are prime real estate for AI-generated responses.</p>
+        </article>
+        <article class="subcard">
+          <h3>2. Comparatives</h3>
+          <p class="why"><strong>Purpose:</strong> Help prospects choose between content platform solutions.</p>
+          <ul>
+            <li><strong>"Digital Newsroom vs. Content Hub vs. Media Centre: Which Suits Your Brand Best?"</strong> - Describe differences, use cases, and recommended scenarios.</li>
+            <li><strong>"DIY CMS vs. DNA Platform: Hidden Costs You Didn't See Coming"</strong> - Highlight advantages of built-in newsroom, AI search, media asset management, and analytics.</li>
+          </ul>
+          <p class="why"><strong>Why This Works for AI:</strong> Side-by-side comparisons are highly quotable and actionable—ideal for AI to extract into decision guides.</p>
+        </article>
+        <article class="subcard">
+          <h3>3. List-Based Content</h3>
+          <p class="why"><strong>Purpose:</strong> Position DNA as a thought leader and make content highly scannable.</p>
+          <ul>
+            <li><strong>"7 Essential Features Every Digital Newsroom Should Have"</strong> - Promotes DNA's features: newsroom, distribution lists, newsroom analytics, AI search.</li>
+            <li><strong>"10 Common PR & Comms Problems—Solved by a Modern Content Platform"</strong> - From file chaos to cross-market coordination—precisely what DNA solves.</li>
+          </ul>
+          <p class="why"><strong>Why This Works for AI:</strong> Lists are lightweight, extractable micro-content that AI engines love to reuse in answers.</p>
+        </article>
+        <article class="subcard">
+          <h3>4. Evergreen “What is…” Articles</h3>
+          <p class="why"><strong>Purpose:</strong> Introduce key concepts for newcomers and reinforce DNA as a resource.</p>
+          <ul>
+            <li><strong>"What Is a Digital Newsroom—and Why Every Brand Needs One"</strong> - Definition, benefits for journalists, internal comms, crisis management.</li>
+            <li><strong>"What Is a Brand Content Hub—and How to Build One"</strong> - Explains DNA's "Content Hub" with asset storage, collaboration and branding.</li>
+          </ul>
+          <p class="why"><strong>Why This Works for AI:</strong> AI models often source glossary-style definitions for quick responses to "What is..." queries.</p>
+        </article>
+        <article class="subcard">
+          <h3>5. Sector-Specific How-Tos / Playbooks</h3>
+          <p class="why"><strong>Purpose:</strong> Tailor content to vertical niches DNA serves (Marketing, PR, internal comms).</p>
+          <ul>
+            <li><strong>"How PR Teams Can Use AI-Powered Newsrooms to Win Media Coverage Faster"</strong> - Uses DNA's AI search and newsroom features in a PR context.</li>
+            <li><strong>"Content Collaboration Playbook for Marketing Teams: Avoid Version Chaos in 6 Easy Steps"</strong> - Based on DNA's platform strengths (team feedback, approvals, branded portal).</li>
+          </ul>
+          <p class="why"><strong>Why This Works for AI:</strong> Niche-specific content increases semantic relevance and visibility for industry-focused queries.</p>
+        </article>
+        <article class="subcard">
+          <h3>6. Trend & Strategic Insights</h3>
+          <p class="why"><strong>Purpose:</strong> Establish DNA as a forward-looking brand with industry foresight.</p>
+          <ul>
+            <li><strong>"The Rise of Media-Centric Platforms for Brands in 2025"</strong> - Contextualises digital newsrooms within broader digital transformation trends.</li>
+            <li><strong>"How AI Search Is Redefining Internal Comms and Brand Content Hubs"</strong> - Builds on DNA's integrated AI-enabled platform capabilities.</li>
+          </ul>
+          <p class="why"><strong>Why This Works for AI:</strong> AI often surfaces "latest" insights from authoritative, trend-savvy sources.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Style -->
+    <section id="style" class="card obs">
+      <h2>Style & Structure Guidelines</h2>
+      <ul class="check">
+        <li>Clear, direct language; short paragraphs; avoid unnecessary jargon.</li>
+        <li>Heading hierarchy (single H1; structured H2/H3).</li>
+        <li>Start with a <strong>TL;DR</strong>; end with 4–6 <strong>FAQs</strong>.</li>
+        <li>Prefer lists, tables, definition boxes; add internal links.</li>
+        <li>Include data/benchmarks with sources where possible.</li>
+        <li>Multimedia with text support: infographic alt text; video transcripts.</li>
+        <li>Keep URLs clean, descriptive and stable; cross-link glossary terms.</li>
+      </ul>
+    </section>
+
+    <!-- Technical -->
+    <section id="technical" class="card obs">
+      <h2>Technical Foundations (high-level only)</h2>
+      <p class="para"><em>Handled by our team; listed here for awareness.</em></p>
+      <ul>
+        <li><strong>Optimise for Bing</strong> (feeds ChatGPT/Copilot; influences Perplexity).</li>
+        <li><strong>Presence in Brave Search</strong> (feeds Claude).</li>
+        <li><strong>Perplexity submission/prioritisation</strong> where applicable.</li>
+        <li><strong>robots.txt & sitemap:</strong> allow relevant bots; keep sitemap fresh.</li>
+        <li><strong>SEO & performance:</strong> fast load, unique meta descriptions, clean URLs, correct headings.</li>
+      </ul>
+      <p class="note">These activities require specialist implementation and ongoing monitoring.</p>
+    </section>
+
+    <!-- Benefits -->
+    <section id="benefits" class="card obs">
+      <h2>Expected Benefits</h2>
+      <div class="benefits">
+        <article><h3>Greater AI visibility</h3><p>Higher likelihood of being quoted by ChatGPT, Claude and Perplexity for relevant queries.</p></article>
+        <article><h3>Authority & trust</h3><p>Clear definitions, guides and evidence signal expertise and reliability.</p></article>
+        <article><h3>SEO synergy</h3><p>The same improvements positively affect traditional search visibility.</p></article>
+        <article><h3>Engagement & conversion</h3><p>Structured content increases clarity, time-on-page and conversion readiness.</p></article>
+        <article><h3>Higher-quality leads</h3><p>Specific, useful resources attract better-fit enquiries from decision-makers.</p></article>
+        <article><h3>Competitive advantage</h3><p>Appear where buyers increasingly search first: AI engines.</p></article>
+      </div>
+    </section>
+
+    <!-- Roadmap -->
+    <section id="roadmap" class="card obs">
+      <h2>🗓️ Roll-Out Plan (90 Days) for DNA.online</h2>
+      
+      <div class="timeline">
+        <div class="timeline-item">
+          <h3>Weeks 0–2 — Foundations</h3>
+          
+          <h4>Service FAQs</h4>
+          <p>Short, AI-ready Q&As for each core offer:</p>
+          <ul class="check">
+            <li><strong>Digital Newsroom</strong> (what it is, who needs it, key components)</li>
+            <li><strong>Content Hub / DAM</strong> (AI search, DNASHare, version control, integrations)</li>
+            <li><strong>SharePoint Migration</strong> (process, security, training)</li>
+            <li><strong>Business Blogging</strong> (benefits, cadence, lead generation)</li>
+            <li><strong>AI for PR</strong> (practical use cases, limitations, ethics)</li>
+          </ul>
+          
+          <h4>TL;DR summaries</h4>
+          <p>Add 2–3 sentence overviews at the top of main pages (Platform, Services, Work, Blog), clearly stating value propositions.</p>
+          
+          <h4>Technical SEO review</h4>
+          <p>Robots.txt, sitemap updates, schema for FAQ/Article, clean URL and title conventions.</p>
+          
+          <div class="outcome">
+            <strong>Outcome:</strong> clarity in positioning + structured, citable content blocks for search engines and AI.
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <h3>Weeks 2–6 — Expansion Through Actionable Content</h3>
+          
+          <h4>How-To Articles (4)</h4>
+          <ul class="check">
+            <li><strong>How to build a journalist-ready newsroom</strong> → expands on the "digital newsroom" concept with a checklist</li>
+            <li><strong>How to migrate off SharePoint without disruption</strong> → practical steps highlighting AI search and DNASHare</li>
+            <li><strong>How to organise digital assets for speed & governance</strong> → taxonomy, file naming, access roles</li>
+            <li><strong>How to launch a business blog that generates leads</strong> → based on the "67% more leads" stat from DNA's blog</li>
+          </ul>
+          
+          <h4>Case Studies (2)</h4>
+          <ul class="check">
+            <li><strong>Aira:</strong> 20k+ assets, before/after, KPIs on search, downloads, productivity</li>
+            <li><strong>A PR/Comms case</strong> (anonymous if needed) showing newsroom impact on journalist engagement</li>
+          </ul>
+          
+          <h4>Internal Linking Pass</h4>
+          <p>Cross-link keywords like Digital Newsroom, DAM, DNASHare, AI Search, SharePoint Migration into relevant pages/posts.</p>
+          
+          <div class="outcome">
+            <strong>Outcome:</strong> builds authority, proves ROI, strengthens site structure for both readers and AI crawlers.
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <h3>Weeks 6–10 — Authority & Demand Capture</h3>
+          
+          <h4>Comparatives (2–3)</h4>
+          <ul class="check">
+            <li><strong>Digital Newsroom vs. traditional "Press" page</strong></li>
+            <li><strong>DNA Content Hub vs. SharePoint</strong> for marketing and PR</li>
+            <li><strong>DAM vs. ECM</strong> for Internal Comms</li>
+          </ul>
+          
+          <h4>List Posts (2)</h4>
+          <ul class="check">
+            <li><strong>10 assets journalists expect</strong> in your newsroom in 2025 (logos, bios, B-roll, fact sheets, usage rights)</li>
+            <li><strong>7 KPIs to track</strong> in your newsroom & content hub (downloads, expired links, "time to find," coverage secured)</li>
+          </ul>
+          
+          <h4>Trend Article (1)</h4>
+          <p><strong>AI for PR in 2025:</strong> real workflows that work (pitch clustering, press kit summarization, ethical boundaries).</p>
+          
+          <div class="outcome">
+            <strong>Outcome:</strong> DNA ranks for "vs." and "best" searches while reinforcing thought leadership.
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <h3>Weeks 10–12 — Depth & Lead Generation</h3>
+          
+          <h4>Glossary Launch</h4>
+          <p>Short, linked definitions for Digital Newsroom, DAM, DNASHare, AI Search, B-roll, Crisis Comms Playbook, Earned Media.</p>
+          
+          <h4>Sector Playbooks (2)</h4>
+          <ul class="check">
+            <li><strong>For PR & Comms Teams:</strong> how to set up a newsroom journalists will actually use</li>
+            <li><strong>For Marketing Teams:</strong> how to move from SharePoint/Google Drive to a DNA content hub</li>
+          </ul>
+          
+          <h4>Workshop (internal)</h4>
+          <p>Review 90-day analytics, identify compounding content (pages that drive most engagement), and align on next quarter's roadmap.</p>
+          
+          <div class="outcome">
+            <strong>Outcome:</strong> DNA has structured educational assets (FAQs, playbooks, glossary) that boost credibility and generate mid-funnel leads.
+          </div>
+        </div>
+      </div>
+      
+      <div class="why-section" style="margin-top: 32px; padding: 24px; background: rgba(157, 204, 164, 0.1); border: 1px solid rgba(107, 143, 119, 0.2); border-radius: 16px;">
+        <h3>Why This Works for DNA</h3>
+        <ul class="check">
+          <li><strong>Leverages what DNA already publishes:</strong> newsroom, blogging, SharePoint migration, AI for PR</li>
+          <li><strong>Converts insights into formats AIs and journalists cite most:</strong> FAQs, lists, how-tos, comparatives, glossary</li>
+          <li><strong>Strengthens link equity and internal navigation,</strong> making it easier for Google and AI models to recognize DNA as an authoritative source in PR tech</li>
+          <li><strong>Balances quick wins</strong> (FAQs, TL;DRs) with strategic depth (playbooks, case studies, glossary) to deliver both visibility and trust</li>
+        </ul>
+      </div>
+    </section>
+
+
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.41/bundled/lenis.min.js"></script>
+  <script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script>
+/* Icons (map lucide names to data-ic attributes) */
+(function hydrateIcons(){
+  const map = {
+    home: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/></svg>',
+    "layout-dashboard": '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>',
+    "file-text": '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>',
+    "book-text": '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20"/><path d="M20 2H6.5A2.5 2.5 0 0 0 4 4.5v15"/><path d="M8 6h9"/><path d="M8 10h9"/></svg>',
+    "pen-tool": '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-6-6 2-2 6 6-2 2z"/><path d="M2 7l4-4 5 5-4 4L2 7z"/></svg>',
+    settings: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v2"/><path d="M12 21v2"/><path d="M4.22 4.22l1.42 1.42"/><path d="M18.36 18.36l1.42 1.42"/><path d="M1 12h2"/><path d="M21 12h2"/><path d="M4.22 19.78l1.42-1.42"/><path d="M18.36 5.64l1.42-1.42"/><circle cx="12" cy="12" r="3"/></svg>',
+    sparkles: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.9 5.7L20 11l-6.1 2.3L12 19l-1.9-5.7L4 11l6.1-2.3L12 3z"/><path d="M5 3l.8 2.5L8 6l-2.2.5L5 9l-.8-2.5L2 6l2.2-.5L5 3z"/><path d="M19 14l.8 2.5L22 17l-2.2.5L19 20l-.8-2.5L16 17l2.2-.5 0 0L19 14z"/></svg>',
+    calendar: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>',
+    phone: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.9.37 1.77.73 2.58a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.5-1.25a2 2 0 0 1 2.11-.45c.81.36 1.68.61 2.58.73A2 2 0 0 1 22 16.92z"/></svg>'
+  };
+  document.querySelectorAll('[data-ic]').forEach(el => el.innerHTML = map[el.dataset.ic] || '');
+})();
+
+/* Smooth scroll (Lenis) */
+let lenis;
+
+function initLenis() {
+  try {
+    if (typeof Lenis !== 'undefined') {
+      lenis = new Lenis({ smoothWheel: true, lerp: 0.12 });
+      
+      function raf(time) {
+        if (lenis) lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+      
+      console.log('Lenis initialized successfully');
+      return true;
+    } else {
+      // Only retry a few times, then give up
+      if (!window.lenisRetryCount) {
+        window.lenisRetryCount = 1;
+        console.log('Lenis not yet available, retrying... (attempt 1)');
+        setTimeout(initLenis, 200);
+      } else if (window.lenisRetryCount < 3) {
+        window.lenisRetryCount++;
+        console.log(`Lenis not yet available, retrying... (attempt ${window.lenisRetryCount})`);
+        setTimeout(initLenis, 300);
+      } else {
+        console.warn('Lenis failed to load after 3 attempts, using native smooth scroll');
+        // Set native smooth scroll as fallback
+        document.documentElement.style.scrollBehavior = 'smooth';
+        return false;
+      }
+      return false;
+    }
+  } catch (error) {
+    console.warn('Lenis initialization failed:', error);
+    // Set native smooth scroll as fallback
+    document.documentElement.style.scrollBehavior = 'smooth';
+    return false;
+  }
+}
+
+// Initialize Lenis when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initLenis);
+} else {
+  initLenis();
+}
+
+// Fallback smooth scroll if Lenis fails
+if (!window.lenis) {
+  // Add smooth scroll behavior to HTML element
+  document.documentElement.style.scrollBehavior = 'smooth';
+}
+
+/* Scroll-spy + progress */
+const sections = Array.from(document.querySelectorAll('main section[id]'));
+const links = Array.from(document.querySelectorAll('.rail__links a'));
+const progressBar = document.getElementById('progressBar');
+
+// Improved scroll-spy with debouncing and better accuracy
+let currentActiveSection = null;
+let scrollTimeout;
+
+function updateActiveSection() {
+  const scrollTop = window.scrollY + 100; // Offset for better detection
+  
+  // Find the most visible section
+  let mostVisibleSection = null;
+  let maxVisibility = 0;
+  
+  sections.forEach(section => {
+    const rect = section.getBoundingClientRect();
+    const sectionTop = rect.top + window.scrollY;
+    const sectionBottom = sectionTop + rect.height;
+    
+    // Calculate how much of the section is visible
+    const visibleTop = Math.max(scrollTop, sectionTop);
+    const visibleBottom = Math.min(scrollTop + window.innerHeight, sectionBottom);
+    const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+    const visibility = visibleHeight / Math.min(rect.height, window.innerHeight);
+    
+    if (visibility > maxVisibility) {
+      maxVisibility = visibility;
+      mostVisibleSection = section;
+    }
+  });
+  
+  // Update active link only if it's different
+  if (mostVisibleSection && mostVisibleSection.id !== currentActiveSection) {
+    currentActiveSection = mostVisibleSection.id;
+    
+    // Remove active class from all links
+    links.forEach(link => link.classList.remove('active'));
+    
+    // Add active class to current section link
+    const activeLink = links.find(link => link.getAttribute('href') === `#${currentActiveSection}`);
+    if (activeLink) {
+      activeLink.classList.add('active');
+    }
+  }
+}
+
+// Debounced scroll handler for smooth updates
+function onScrollUpdate() {
+  clearTimeout(scrollTimeout);
+  scrollTimeout = setTimeout(updateActiveSection, 10);
+}
+
+// Intersection Observer for animations (separate from scroll-spy)
+const io = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('is-in');
+    }
+  });
+}, { rootMargin: "-40% 0px -50% 0px", threshold: 0.01 });
+
+sections.forEach(s => { io.observe(s); });
+
+// Add scroll event listener for active section updates
+document.addEventListener('scroll', onScrollUpdate, { passive: true });
+
+// Initialize active section on page load
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(updateActiveSection, 100);
+});
+
+/* Progress based on scroll */
+function onScroll(){
+  if (progressBar) {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const docHeight = document.body.scrollHeight - window.innerHeight;
+    const p = Math.min(1, Math.max(0, scrollTop / docHeight));
+    progressBar.style.width = (p*100) + '%';
+  }
+}
+document.addEventListener('scroll', onScroll, { passive:true });
+
+/* Reveal on enter - more subtle */
+const revealObs = new IntersectionObserver((ents)=>{
+  ents.forEach(e=>{ 
+    if(e.isIntersecting){ 
+      e.target.classList.add('is-in'); 
+      // Don't unobserve to allow re-animation
+    }
+  });
+},{ threshold: 0.05, rootMargin: "0px 0px -50px 0px" });
+document.querySelectorAll('.obs').forEach(el => {
+  revealObs.observe(el);
+  // Add initial visibility
+  el.classList.add('is-in');
+});
+
+/* GSAP enhanced animations */
+gsap.registerPlugin(ScrollTrigger);
+
+gsap.to('.hero-art .blob',{ 
+  y: 20, 
+  rotation: 360,
+  duration: 8, 
+  yoyo: true, 
+  repeat: -1, 
+  ease: 'sine.inOut' 
+});
+
+// Stagger animation for KPI numbers
+gsap.from('.kpi__num', {
+  scale: 0,
+  duration: 0.6,
+  stagger: 0.1,
+  ease: 'back.out(1.7)',
+  scrollTrigger: {
+    trigger: '.kpi-grid',
+    start: 'top 80%'
+  }
+});
+
+// Stagger animation for subcards
+gsap.from('.subcard', {
+  y: 50,
+  opacity: 0,
+  duration: 0.8,
+  stagger: 0.1,
+  ease: 'power2.out',
+  scrollTrigger: {
+    trigger: '.subgrid',
+    start: 'top 80%'
+  }
+});
+
+/* Top button - Only add listener if element exists */
+const btnTop = document.getElementById('btnTop');
+if (btnTop) {
+  btnTop.addEventListener('click', () => {
+    if (lenis) {
+      lenis.scrollTo(0);
+    } else {
+      // Fallback to native smooth scroll
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+}
+
+/* Mobile drawer */
+const btnMenu = document.getElementById('btnMenu');
+const drawer = document.getElementById('mobileMenu');
+btnMenu?.addEventListener('click', ()=>{
+  const open = drawer.getAttribute('aria-hidden') === 'false';
+  drawer.setAttribute('aria-hidden', open ? 'true' : 'false');
+  btnMenu.setAttribute('aria-expanded', open ? 'false' : 'true');
+});
+drawer?.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>{
+  drawer.setAttribute('aria-hidden','true'); btnMenu.setAttribute('aria-expanded','false');
+}));
+
+
+
+/* Year - Only update if element exists */
+const yearElement = document.getElementById('year');
+if (yearElement) {
+  yearElement.textContent = new Date().getFullYear();
+}
+  </script>
+</body>
+</html>
